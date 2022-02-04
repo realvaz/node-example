@@ -4,7 +4,28 @@ const router = express.Router();
 const User = require("../models/user");
 
 router.get("/", (req, res) => {
-  res.json("GET local User");
+  let from = req.query.from || 0;
+  from = Number(from);
+
+  let limit = req.query.limit || 5;
+  limit = Number(limit);
+
+  User.find({ state: true }, "username email role state google img")
+    .skip(from)
+    .limit(limit)
+    .exec((err, users) => {
+      if (err) {
+        res.status(400).json({
+          ok: false,
+          err,
+        });
+      } else {
+        res.json({
+          ok: true,
+          users,
+        });
+      }
+    });
 });
 
 router.post("/", (req, res) => {
