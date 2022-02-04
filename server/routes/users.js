@@ -35,10 +35,30 @@ router.post("/", (req, res) => {
 
 router.put("/:id", (req, res) => {
   let id = req.params.id;
+  let {username, email, img, role, state} = req.body;
 
-  res.json({
+  User.findByIdAndUpdate(
     id,
-  });
+    {username, email, img, role, state},
+    {
+      new: true, //devuelve el objeto actualizado
+      runValidators: true, //aplica las validaciones del esquema del modelo
+      context: 'query'  //necesario para las disparar las validaciones de mongoose-unique-validator
+    },
+    (err, userDB) => {
+      if (err) {
+        return res.status(400).json({
+          ok: false,
+          err,
+        });
+      }
+
+      res.json({
+        ok: true,
+        user: userDB,
+      });
+    }
+  );
 });
 
 router.delete("/", (req, res) => {

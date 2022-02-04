@@ -1,6 +1,13 @@
 const mongoose = require("mongoose");
 
+const uniqueValidator = require("mongoose-unique-validator");
+
 let Schema = mongoose.Schema;
+
+let validRoles = {
+  values: ["ADMIN", "USER"],
+  message: "{VALUE} is not a valid role",
+};
 
 let userSchema = new Schema({
   username: {
@@ -23,6 +30,7 @@ let userSchema = new Schema({
   role: {
     type: String,
     default: "USER",
+    enum: validRoles,
   },
   state: {
     //Not required
@@ -34,5 +42,7 @@ let userSchema = new Schema({
     default: false,
   },
 });
+
+userSchema.plugin(uniqueValidator, { message: "{PATH} should be unique" });
 
 module.exports = mongoose.model("User", userSchema);
