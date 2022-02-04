@@ -61,8 +61,49 @@ router.put("/:id", (req, res) => {
   );
 });
 
-router.delete("/", (req, res) => {
-  res.json("DELETE User");
+router.delete("/:id", (req, res) => {
+  const id = req.params.id;
+  // User.findByIdAndRemove(id, (error, userDB) => {
+  //   if (error) {
+  //     return res.status(400).json({
+  //       ok: false,
+  //       err,
+  //     });
+  //   } else {
+  //     res.json({
+  //       ok: true,
+  //       user: userDB,
+  //     });
+  //   }
+  // });
+
+  User.findByIdAndUpdate(
+    id,
+    { state: false },
+    { new: true },
+    (error, userDB) => {
+      if (error) {
+        return res.status(400).json({
+          ok: false,
+          error,
+        });
+      }
+
+      if (userDB == null) {
+        res.status(400).json({
+          ok: false,
+          error: {
+            message: "User not found",
+          },
+        });
+      } else if (userDB != null) {
+        res.json({
+          ok: true,
+          user: userDB,
+        });
+      }
+    }
+  );
 });
 
 module.exports = router;
